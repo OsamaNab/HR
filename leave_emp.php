@@ -179,32 +179,7 @@ $(document).ready(function() {
 <link href="../admin/css/style.css" rel="stylesheet">
 <script>
   
-$("#confirmLeaveBtn").click(function() {
-    // Retrieve form data
-    var form_data = $("#leaveRequestForm").serializeArray();
-    
-    // Build sql query string
-    var sql = "INSERT INTO leave_request (emp_id, leave_type, start_date, end_date, reason) VALUES ('" + form_data[0].value + "', '" + form_data[1].value + "', '" + form_data[2].value + "', '" + form_data[3].value + "', '" + form_data[4].value + "')";
 
-    // Send request to server
-    $.post("insert-leave-request.php", {sql: sql}, function(data) {
-        // Handle response from server
-        if (data == "success") {
-            // Display success message and refresh page
-            alert("Leave request submitted successfully.");
-            location.reload();
-        } else {
-            // Display error message
-            alert("Error: " + data);
-        }
-    });
-});
-
-
-$("#confirmLeaveBtn").click(function() {
-    confirmLeave();
-});
- 
    
  </script>
 
