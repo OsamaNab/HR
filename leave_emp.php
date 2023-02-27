@@ -178,8 +178,49 @@ $(document).ready(function() {
 
 <link href="../admin/css/style.css" rel="stylesheet">
 <script>
-  
+ $(document).ready(function() {
+  // Event handler for when the user selects a leave type
+  $("#leaveType").change(function() {
+    // Code to update the form based on the selected leave type goes here
+  });
 
+  // Event handler for when the user clicks the "Submit" button
+  $("#submitLeaveBtn").click(function(e) {
+    // Prevent the form from submitting by default
+    e.preventDefault();
+
+    // Code to validate the form data goes here
+    // ...
+
+    // Call the confirmLeave function if the form data is valid
+    confirmLeave();
+  });
+
+  // Event handler for when the user clicks the "Cancel" button on the confirmation dialog
+  $("#cancelLeaveBtn").click(function() {
+    // Hide the confirmation dialog
+    $("#confirmLeaveModal").modal("hide");
+  });
+
+  // Define the click event handler for the confirmation button
+  $("#confirmLeaveBtn").click(function() {
+    // Get the selected leave type and update the form action
+    var leaveType = $("#leaveType").val();
+    var formAction = "submit_leave.php?type=" + leaveType;
+    $("#leaveForm").attr("action", formAction);
+
+    // Submit the form
+    $("#leaveForm").submit();
+  });
+});
+
+function confirmLeave() {
+  // Code to check leave days and show the confirmation dialog goes here
+  // ...
+
+  // Show the confirmation dialog
+  $("#confirmLeaveModal").modal("show");
+}
    
  </script>
 
