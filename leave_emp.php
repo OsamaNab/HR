@@ -108,16 +108,16 @@ else
                 // Add a JavaScript function to handle the confirmation button click
                 
 echo '<script>
-var jq = $.noConflict();
+var j = jQuery.noConflict();
 
-jq(document).ready(function() {
-  jq("#confirmLeaveBtn").click(function() {
+j(document).ready(function() {
+  j("#confirmLeaveBtn").click(function() {
     // Insert the leave request into the tbleavemp table
     var sql = "INSERT INTO tbleavemp (LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid, empid) " +
       "VALUES (\'" + $LeaveTypee + "\', \'" + $fromdate + "\', \'" + $todate + "\', \'" + $Description + "\', \'" + $status + "\', \'" + $isread + "\', \'" + $isPaid + "\', \'" + $empid + "\')";
-    jq.post("insert-leave-request.php", {sql: sql}, function(data) {
+    j.post("insert-leave-request.php", {sql: sql}, function(data) {
       // Display a success message
-      jq("#confirmationModal").modal("hide");
+      j("#confirmationModal").modal("hide");
       alert("Leave request submitted successfully.");
     });
   });
@@ -181,16 +181,16 @@ jq(document).ready(function() {
 <link href="../admin/css/style.css" rel="stylesheet">
 
 <script>
+var j = jQuery.noConflict();
 
-
-$j(document).ready(function() {
+j(document).ready(function() {
   // Event handler for when the user selects a leave type
-  $j("#leaveType").change(function() {
+  j("#leaveType").change(function() {
     // Code to update the form based on the selected leave type goes here
   });
 
   // Event handler for when the user clicks the "Submit" button
-  $j("#submitLeaveBtn").click(function(e) {
+  j("#submitLeaveBtn").click(function(e) {
     // Prevent the form from submitting by default
     e.preventDefault();
 
@@ -202,20 +202,20 @@ $j(document).ready(function() {
   });
 
   // Event handler for when the user clicks the "Cancel" button on the confirmation dialog
-  $j("#cancelLeaveBtn").click(function() {
+  j("#cancelLeaveBtn").click(function() {
     // Hide the confirmation dialog
-    $j("#confirmLeaveModal").modal("hide");
+    j("#confirmLeaveModal").modal("hide");
   });
 
   // Define the click event handler for the confirmation button
-  $j("#confirmLeaveBtn").click(function() {
+  j("#confirmLeaveBtn").click(function() {
     // Get the selected leave type and update the form action
     var leaveType = $j("#leaveType").val();
     var formAction = "submit_leave.php?type=" + leaveType;
-    $j("#leaveForm").attr("action", formAction);
+    j("#leaveForm").attr("action", formAction);
 
     // Submit the form
-    $j("#leaveForm").submit();
+    j("#leaveForm").submit();
   });
 });
 
@@ -224,7 +224,7 @@ function confirmLeave() {
   // ...
 
   // Show the confirmation dialog
-  $j("#confirmLeaveModal").modal("show");
+  j("#confirmLeaveModal").modal("show");
 }
    
  </script>
