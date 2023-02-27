@@ -106,18 +106,21 @@ else
                               </div>';
             
                 // Add a JavaScript function to handle the confirmation button click
-                echo '<script>
-                        $("#confirmLeaveBtn").click(function() {
-                          // Insert the leave request into the tbleavemp table
-                          var sql = "INSERT INTO tbleavemp (LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid, empid) " +
-                          "VALUES (\'" + $LeaveTypee + "\', \'" + $fromdate + "\', \'" + $todate + "\', \'" + $Description + "\', \'" + $status + "\', \'" + $isread + "\', \'" + $isPaid + "\', \'" + $empid + "\')";
-                          $.post("insert-leave-request.php", {sql: sql}, function(data) {
-                            // Display a success message
-                            $("#confirmationModal").modal("hide");
-                            alert("Leave request submitted successfully.");
-                          });
-                        });
-                      </script>';
+                
+echo '<script>
+$(document).ready(function() {
+  $("#confirmLeaveBtn").click(function() {
+    // Insert the leave request into the tbleavemp table
+    var sql = "INSERT INTO tbleavemp (LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid, empid) " +
+      "VALUES (\'" + $LeaveTypee + "\', \'" + $fromdate + "\', \'" + $todate + "\', \'" + $Description + "\', \'" + $status + "\', \'" + $isread + "\', \'" + $isPaid + "\', \'" + $empid + "\')";
+    $.post("insert-leave-request.php", {sql: sql}, function(data) {
+      // Display a success message
+      $("#confirmationModal").modal("hide");
+      alert("Leave request submitted successfully.");
+    });
+  });
+});
+</script>';;
             }
         }
     }
@@ -147,8 +150,9 @@ else
 
 <title> اضافة اجازة</title>
  <!-- jQuery -->
- <script type="text/javascript" src="../admin/js/jquery-3.4.1.min.js"></script>
  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ <script type="text/javascript" src="../admin/js/jquery-3.4.1.min.js"></script>
+ 
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
  <!-- Bootstrap core CSS -->
 <link href="../admin/css/bootstrap.rtl.min.css" rel="stylesheet">
@@ -174,18 +178,34 @@ else
 
 <link href="../admin/css/style.css" rel="stylesheet">
 <script>
-  $(document).ready(function() {
-   $("#confirmLeaveBtn").click(function() {
-    // Insert the leave request into the tbleavemp table
-    var sql = "INSERT INTO tbleavemp (LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid, empid) " +
-    "VALUES (\'" + $LeaveTypee + "\', \'" + $fromdate + "\', \'" + $todate + "\', \'" + $Description + "\', \'" + $status + "\', \'" + $isread + "\', \'" + $isPaid + "\', \'" + $empid + "\')";
+  
+$("#confirmLeaveBtn").click(function() {
+    // Retrieve form data
+    var form_data = $("#leaveRequestForm").serializeArray();
+    
+    // Build sql query string
+    var sql = "INSERT INTO leave_request (emp_id, leave_type, start_date, end_date, reason) VALUES ('" + form_data[0].value + "', '" + form_data[1].value + "', '" + form_data[2].value + "', '" + form_data[3].value + "', '" + form_data[4].value + "')";
+
+    // Send request to server
     $.post("insert-leave-request.php", {sql: sql}, function(data) {
-     // Display a success message
-     $("#confirmationModal").modal("hide");
-     alert("Leave request submitted successfully.");
+        // Handle response from server
+        if (data == "success") {
+            // Display success message and refresh page
+            alert("Leave request submitted successfully.");
+            location.reload();
+        } else {
+            // Display error message
+            alert("Error: " + data);
+        }
     });
-   });
-  });
+});
+
+
+$("#confirmLeaveBtn").click(function() {
+    confirmLeave();
+});
+ 
+   
  </script>
 
 <style>
