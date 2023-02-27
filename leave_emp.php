@@ -181,52 +181,28 @@ j(document).ready(function() {
 <link href="../admin/css/style.css" rel="stylesheet">
 
 <script>
-var j = jQuery.noConflict();
+jQuery(document).ready(function($) {
+  $("#confirmLeaveBtn").click(function() {
+    // Get the values of the hidden input fields
+    var LeaveTypee = $("#LeaveTypee").val();
+    var fromdate = $("#fromdate").val();
+    var todate = $("#todate").val();
+    var Description = $("#Description").val();
+    var status = $("#status").val();
+    var isread = $("#isread").val();
+    var isPaid = $("#isPaid").val();
+    var empid = $("#empid").val();
 
-j(document).ready(function() {
-  // Event handler for when the user selects a leave type
-  j("#leaveType").change(function() {
-    // Code to update the form based on the selected leave type goes here
-  });
-
-  // Event handler for when the user clicks the "Submit" button
-  j("#submitLeaveBtn").click(function(e) {
-    // Prevent the form from submitting by default
-    e.preventDefault();
-
-    // Code to validate the form data goes here
-    // ...
-
-    // Call the confirmLeave function if the form data is valid
-    confirmLeave();
-  });
-
-  // Event handler for when the user clicks the "Cancel" button on the confirmation dialog
-  j("#cancelLeaveBtn").click(function() {
-    // Hide the confirmation dialog
-    j("#confirmLeaveModal").modal("hide");
-  });
-
-  // Define the click event handler for the confirmation button
-  j("#confirmLeaveBtn").click(function() {
-    // Get the selected leave type and update the form action
-    var leaveType = $j("#leaveType").val();
-    var formAction = "submit_leave.php?type=" + leaveType;
-    j("#leaveForm").attr("action", formAction);
-
-    // Submit the form
-    j("#leaveForm").submit();
+    // Insert the leave request into the tbleavemp table
+    var sql = "INSERT INTO tbleavemp (LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid, empid) " +
+      "VALUES (\'" + LeaveTypee + "\', \'" + fromdate + "\', \'" + todate + "\', \'" + Description + "\', \'" + status + "\', \'" + isread + "\', \'" + isPaid + "\', \'" + empid + "\')";
+    $.post("insert-leave-request.php", {sql: sql}, function(data) {
+      // Display a success message
+      $("#confirmationModal").modal("hide");
+      alert("Leave request submitted successfully.");
+    });
   });
 });
-
-function confirmLeave() {
-  // Code to check leave days and show the confirmation dialog goes here
-  // ...
-
-  // Show the confirmation dialog
-  j("#confirmLeaveModal").modal("show");
-}
-   
  </script>
 
 <style>
@@ -335,6 +311,14 @@ margin: auto;        }
 
 
         </div>
+        <input type="hidden" id="LeaveTypee" name="LeaveTypee" value="<?php echo $LeaveTypee ?>">
+<input type="hidden" id="fromdate" name="fromdate" value="<?php echo $fromdate ?>">
+<input type="hidden" id="todate" name="todate" value="<?php echo $todate ?>">
+<input type="hidden" id="Description" name="Description" value="<?php echo $Description ?>">
+<input type="hidden" id="status" name="status" value="<?php echo $status ?>">
+<input type="hidden" id="isread" name="isread" value="<?php echo $isread ?>">
+<input type="hidden" id="isPaid" name="isPaid" value="<?php echo $isPaid ?>">
+<input type="hidden" id="empid" name="empid" value="<?php echo $empid ?>">
 
 
 <br>
