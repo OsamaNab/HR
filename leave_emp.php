@@ -30,14 +30,14 @@ else
         $isPaid = 1 ; 
        if ($fromdate > $todate) 
        {
-            $error = "الرجاء اكتب بيانات صحيحة : يجب ان يكون تاريخ بداء الاجازة قبل تاريخ نهاية الاجازة ";
+            $error = "the beginning of holiday can't be more than the end!";
 
         } 
         else 
         { $start = $fromdate;
             $end = $todate;
             $days = 0; ;
-            
+            //function to exclude weekends and vacations days from leave request 
             $query = "SELECT Vac_Date FROM vacations";
             $result = mysqli_query($conn, $query);
             $vacations = mysqli_fetch_all($result, MYSQLI_ASSOC);
@@ -53,17 +53,17 @@ else
                 $start = date("Y-m-d", strtotime("+1 day", strtotime($start)));
             }
             
-            
+            //retreive the remaining leave hours for employee
             $empname = $_SESSION['eid'] ;
             $sql = mysqli_query($conn, "SELECT  Daily_Hours , leaveDays
             FROM tbemployees  where ID_emp='$empname'");
             
             $row1 = (mysqli_fetch_assoc($sql)) ;
             
-            $daily = $row1['Daily_Hours'];//8
-            $leave= $row1['leaveDays']; //80 
-            
-            $Newhours = $daily * $days ; //8 * 5 = 40 
+            $daily = $row1['Daily_Hours'];
+            $leave= $row1['leaveDays']; 
+            //converting the hours into working days
+            $Newhours = $daily * $days ; 
            
 
 
@@ -84,45 +84,10 @@ else
 
             } 
             else {
-                // Show a Bootstrap confirmation message
-                echo '<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                  <div class="modal-content">
-                                    <div class="modal-header">
-                                      <h5 class="modal-title" id="confirmationModalLabel">Confirmation Required</h5>
-                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                      </button>
-                                    </div>
-                                    <div class="modal-body">
-                              لا يوجد لديك اجازات سيتم خصم هذه الاجازة من راتبك هل تريد المتابعة?
-                                    </div>
-                                    <div class="modal-footer">
-                                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                      <button type="button" class="btn btn-primary" id="confirmLeaveBtn">Yes</button>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>';
-            
-                // Add a JavaScript function to handle the confirmation button click
-                
-echo '<script>
-var j = jQuery.noConflict();
-
-j(document).ready(function() {
-  j("#confirmLeaveBtn").click(function() {
-    // Insert the leave request into the tbleavemp table
-    var sql = "INSERT INTO tbleavemp (LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid, empid) " +
-      "VALUES (\'" + $LeaveTypee + "\', \'" + $fromdate + "\', \'" + $todate + "\', \'" + $Description + "\', \'" + $status + "\', \'" + $isread + "\', \'" + $isPaid + "\', \'" + $empid + "\')";
-    j.post("insert-leave-request.php", {sql: sql}, function(data) {
-      // Display a success message
-      j("#confirmationModal").modal("hide");
-      alert("Leave request submitted successfully.");
-    });
-  });
-});
-</script>';
+              //ask the employee that this leave is going to be paid and if confirmed and insert isPaid ==1
+		    
+		    /* I have no idea how to bring this off 
+		    */
             }
         }
     }
@@ -178,32 +143,6 @@ j(document).ready(function() {
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css" integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
 
 
-<link href="../admin/css/style.css" rel="stylesheet">
-
-<script>
-jQuery(document).ready(function($) {
-  $("#confirmLeaveBtn").click(function() {
-    // Get the values of the hidden input fields
-    var LeaveTypee = $("#LeaveTypee").val();
-    var fromdate = $("#fromdate").val();
-    var todate = $("#todate").val();
-    var Description = $("#Description").val();
-    var status = $("#status").val();
-    var isread = $("#isread").val();
-    var isPaid = $("#isPaid").val();
-    var empid = $("#empid").val();
-
-    // Insert the leave request into the tbleavemp table
-    var sql = "INSERT INTO tbleavemp (LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid, empid) " +
-      "VALUES (\'" + LeaveTypee + "\', \'" + fromdate + "\', \'" + todate + "\', \'" + Description + "\', \'" + status + "\', \'" + isread + "\', \'" + isPaid + "\', \'" + empid + "\')";
-    $.post("insert-leave-request.php", {sql: sql}, function(data) {
-      // Display a success message
-      $("#confirmationModal").modal("hide");
-      alert("Leave request submitted successfully.");
-    });
-  });
-});
- </script>
 
 <style>
 		
