@@ -30,14 +30,14 @@ else
         $isPaid = 1 ; 
        if ($fromdate > $todate) 
        {
-            $error = "the beginning of holiday can't be more than the end!";
+            $error = "الرجاء اكتب بيانات صحيحة : يجب ان يكون تاريخ بداء الاجازة قبل تاريخ نهاية الاجازة ";
 
         } 
         else 
         { $start = $fromdate;
             $end = $todate;
             $days = 0; ;
-            //function to exclude weekends and vacations days from leave request 
+            
             $query = "SELECT Vac_Date FROM vacations";
             $result = mysqli_query($conn, $query);
             $vacations = mysqli_fetch_all($result, MYSQLI_ASSOC);
@@ -53,17 +53,17 @@ else
                 $start = date("Y-m-d", strtotime("+1 day", strtotime($start)));
             }
             
-            //retreive the remaining leave hours for employee
+            
             $empname = $_SESSION['eid'] ;
             $sql = mysqli_query($conn, "SELECT  Daily_Hours , leaveDays
             FROM tbemployees  where ID_emp='$empname'");
             
             $row1 = (mysqli_fetch_assoc($sql)) ;
             
-            $daily = $row1['Daily_Hours'];
-            $leave= $row1['leaveDays']; 
-            //converting the hours into working days
-            $Newhours = $daily * $days ; 
+            $daily = $row1['Daily_Hours'];//8
+            $leave= $row1['leaveDays']; //80 
+            
+            $Newhours = $daily * $days ; //8 * 5 = 40 
            
 
 
@@ -72,6 +72,23 @@ else
 
             if($leave > $Newhours )
             {
+ // Employee has enough leave days, insert data into database
+        $isPaid = 0;
+    } else {
+        // Employee does not have enough leave days, ask for confirmation to proceed with paid leave request
+        $confirmed =   confirm("You do not have enough leave days to cover this request. Do you still want to submit this as a paid leave request?");
+        if($confirmed) {
+            // User confirmed paid leave request, insert data into database with isPaid = 1
+            $isPaid = 1;
+        } else {
+            // User did not confirm paid leave request, exit script
+            exit();
+        }
+
+
+
+                
+            }
                 // Insert leave request into tbleavemp table directly since leave hours are available
                 $query = "INSERT INTO tbleavemp(LeaveType, FromDate, ToDate, Descr, Status, IsRead, empid) 
                 VALUES ('$LeaveTypee','$fromdate','$todate','$Description','$status','$isread','$empid')";
@@ -82,13 +99,8 @@ else
                     $error = "اسف لايمكن ارسال الطلب بسبب هناك اخطاء يرجى المحاولة لاحقاً";
                 }
 
-            } 
-            else {
-              //ask the employee that this leave is going to be paid and if confirmed and insert isPaid ==1
-		    
-		    /* I have no idea how to bring this off 
-		    */
-            }
+            
+           
         }
     }
 }
@@ -143,6 +155,53 @@ else
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css" integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
 
 
+<link href="../admin/css/style.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+      
+    </style>
+    <script>
+        $(document).ready(function() {
+            // Submit form using AJAX
+            $('form').submit(function(event) {
+                event.preventDefault();
+                var form_data = $(this).serialize();
+                $.ajax({
+                    url: 'check_leave_days.php',
+                    method: 'POST',
+                    data: form_data,
+                    success: function(response) {
+                        if(response == 'paid') {
+                            // Show confirmation message
+                            var confirmation_message = '<div class="confirmation-message">';
+                            confirmation_message += '<h2>You do not have enough leave days to cover this request.</h2>';
+                            confirmation_message += '<p>Do you still want to submit this as a paid leave request?</p>';
+                            confirmation_message += '<button id="confirm-paid-leave">Yes</button>';
+                            confirmation_message += '<button id="cancel-paid-leave">No</button>';
+                            confirmation_message += '</div>';
+                            $('body').append(confirmation_message);
+                            
+                            // Handle confirmation button clicks
+                            $('#confirm-paid-leave').click(function() {
+                                $('input[name="isPaid"]').val('1');
+                                $('form').unbind('submit').submit();
+                            });
+                            $('#cancel-paid-leave').click(function() {
+                                $('.confirmation-message').remove();
+                            });
+                            
+                        } else {
+                            // No need for confirmation, submit form as normal
+                            $('input[name="isPaid"]').val('0');
+                            $('form').unbind('submit').submit();
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
+
 
 <style>
 		
@@ -151,6 +210,33 @@ else
 		.modal {
             width: 100% !important;
 margin: auto;        }
+  .confirmation-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #000;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #000;
+        }
+        .confirmation-message h2 {
+            margin-top: 0;
+        }
+        .confirmation-message button {
+            margin-top: 20px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .confirmation-message button:hover {
+            background-color: #3e8e41;
+        }
 
 </style>
 
@@ -233,7 +319,7 @@ margin: auto;        }
                 <div class="form-group row pt-5">
                                 <div class="col-md-12 text-right">
 
-                                    
+                                         <input type="hidden" name="isPaid" value="">
                          
                                         <button type="submit" name="add_le" class="btn btn-primary mb-5"onclick="return valid();" > ارسال   </button>
                                 </div>
@@ -250,16 +336,7 @@ margin: auto;        }
 
 
         </div>
-        <input type="hidden" id="LeaveTypee" name="LeaveTypee" value="<?php echo $LeaveTypee ?>">
-<input type="hidden" id="fromdate" name="fromdate" value="<?php echo $fromdate ?>">
-<input type="hidden" id="todate" name="todate" value="<?php echo $todate ?>">
-<input type="hidden" id="Description" name="Description" value="<?php echo $Description ?>">
-<input type="hidden" id="status" name="status" value="<?php echo $status ?>">
-<input type="hidden" id="isread" name="isread" value="<?php echo $isread ?>">
-<input type="hidden" id="isPaid" name="isPaid" value="<?php echo $isPaid ?>">
-<input type="hidden" id="empid" name="empid" value="<?php echo $empid ?>">
-
-
+    
 <br>
 
 
@@ -286,12 +363,6 @@ margin: auto;        }
 
 
 </html>
-
-
-
-
-
-
 
 
 
