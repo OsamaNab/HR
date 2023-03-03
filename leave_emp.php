@@ -89,8 +89,7 @@ else
     echo '<script>';
     echo 'var confirmed = confirm("لا يوجد لديك رصيد اجازات كاف, سيتم خصم'.floor($deduction/$daily).'يوم من راتبك, هل تريد المتابعة ?");';
     echo 'if (confirmed) {';
-    echo '$isPaid = 1;'
-    ;   // Insert leave request into tbleavemp table directly since leave hours are available
+    echo '$isPaid = 1;';   // Insert leave request into tbleavemp table directly since leave hours are available
     $query = "INSERT INTO tbleavemp(LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid ,empid) 
     VALUES ('$LeaveTypee','$fromdate','$todate','$Description','$status','$isread','$isPaid' , '$empid')";
     
@@ -99,7 +98,9 @@ else
     } else {  
         $error = "اسف لايمكن ارسال الطلب بسبب هناك اخطاء يرجى المحاولة لاحقاً";
     }
-    echo '} ';
+    echo '} else {
+        exit();
+    } ';
       
     echo '</script>';
 
@@ -109,17 +110,7 @@ else
 
                 
             
-                /* Insert leave request into tbleavemp table directly since leave hours are available
-                $query = "INSERT INTO tbleavemp(LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid ,empid) 
-                VALUES ('$LeaveTypee','$fromdate','$todate','$Description','$status','$isread','$isPaid' , '$empid')";
                 
-                if ($conn->query($query) === TRUE) { 
-                    $msg = "تم ارسال طلب الاجازة الخاص بك الى المسؤول سوف يتم الاجابة عليك باسرع وقت :شكرا لك";
-                } else {  
-                    $error = "اسف لايمكن ارسال الطلب بسبب هناك اخطاء يرجى المحاولة لاحقاً";
-                }*/
-                
-         
          
           
             
