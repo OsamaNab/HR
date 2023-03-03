@@ -36,7 +36,7 @@ else
         else 
         { $start = $fromdate;
             $end = $todate;
-            $days = 0; ;
+            $days = 0; 
             
             $query = "SELECT Vac_Date FROM vacations";
             $result = mysqli_query($conn, $query);
@@ -64,7 +64,7 @@ else
             $leave= $row1['leaveDays']; //80 
             
             $Newhours = $daily * $days ; //8 * 5 = 40 
-           
+        
 
 
 
@@ -74,24 +74,42 @@ else
             {
  // Employee has enough leave days, insert data into database
         $isPaid = 0;
+         // Insert leave request into tbleavemp table directly since leave hours are available
+         $query = "INSERT INTO tbleavemp(LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid ,empid) 
+         VALUES ('$LeaveTypee','$fromdate','$todate','$Description','$status','$isread','$isPaid' , '$empid')";
+         
+         if ($conn->query($query) === TRUE) { 
+             $msg = "تم ارسال طلب الاجازة الخاص بك الى المسؤول سوف يتم الاجابة عليك باسرع وقت :شكرا لك";
+         } else {  
+             $error = "اسف لايمكن ارسال الطلب بسبب هناك اخطاء يرجى المحاولة لاحقاً";
+         }
+         
     } else {
     $deduction = $Newhours - $leave   ; 
-      echo '<script>  // Employee does not have enough leave days, ask for confirmation to proceed with paid leave request
-        var confirmed = confirm("لا يوجد لديك رصيد اجازات كاف, سيتم خصم'.floor($deduction/$days).'يوم من راتبك, هل تريد المتابعة ?");
-        if(confirmed) {
-            // User confirmed paid leave request, insert data into database with isPaid = 1
-            $isPaid = 1;
-        } else {
-            // User did not confirm paid leave request, exit script
-          exit(); 
+    echo '<script>';
+    echo 'var confirmed = confirm("لا يوجد لديك رصيد اجازات كاف, سيتم خصم'.floor($deduction/$daily).'يوم من راتبك, هل تريد المتابعة ?");';
+    echo 'if (confirmed) {';
+    echo '$isPaid = 1;'
+    ;   // Insert leave request into tbleavemp table directly since leave hours are available
+    $query = "INSERT INTO tbleavemp(LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid ,empid) 
+    VALUES ('$LeaveTypee','$fromdate','$todate','$Description','$status','$isread','$isPaid' , '$empid')";
+    
+    if ($conn->query($query) === TRUE) { 
+        $msg = "تم ارسال طلب الاجازة الخاص بك الى المسؤول سوف يتم الاجابة عليك باسرع وقت :شكرا لك";
+    } else {  
+        $error = "اسف لايمكن ارسال الطلب بسبب هناك اخطاء يرجى المحاولة لاحقاً";
+    }
+    echo '} ';
+      
+    echo '</script>';
+
         }
 
-</script>';
+
 
                 
-            }
             
-                // Insert leave request into tbleavemp table directly since leave hours are available
+                /* Insert leave request into tbleavemp table directly since leave hours are available
                 $query = "INSERT INTO tbleavemp(LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid ,empid) 
                 VALUES ('$LeaveTypee','$fromdate','$todate','$Description','$status','$isread','$isPaid' , '$empid')";
                 
@@ -99,14 +117,17 @@ else
                     $msg = "تم ارسال طلب الاجازة الخاص بك الى المسؤول سوف يتم الاجابة عليك باسرع وقت :شكرا لك";
                 } else {  
                     $error = "اسف لايمكن ارسال الطلب بسبب هناك اخطاء يرجى المحاولة لاحقاً";
-                }
-
+                }*/
+                
+         
+         
+          
             
            
         }
     }
-}
 
+}
 
   
 
@@ -158,87 +179,7 @@ else
 
 
 <link href="../admin/css/style.css" rel="stylesheet">
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
-    <script>
-        $(document).ready(function() {
-            // Submit form using AJAX
-            $('form').submit(function(event) {
-                event.preventDefault();
-                var form_data = $(this).serialize();
-                $.ajax({
-                    url: 'leave_emp.php',
-                    method: 'POST',
-                    data: form_data,
-                    success: function(response) {
-                        if(response == 'paid') {
-                            // Show confirmation message
-                            var confirmation_message = '<div class="confirmation-message">';
-                            confirmation_message += '<h2>You do not have enough leave days to cover this request.</h2>';
-                            confirmation_message += '<p>Do you still want to submit this as a paid leave request?</p>';
-                            confirmation_message += '<button id="confirm-paid-leave">Yes</button>';
-                            confirmation_message += '<button id="cancel-paid-leave">No</button>';
-                            confirmation_message += '</div>';
-                            $('body').append(confirmation_message);
-                            
-                            // Handle confirmation button clicks
-                            $('#confirm-paid-leave').click(function() {
-                                $('input[name="isPaid"]').val('1');
-                                $('form').unbind('submit').submit();
-                            });
-                            $('#cancel-paid-leave').click(function() {
-                                $('.confirmation-message').remove();
-                            });
-                            
-                        } else {
-                            // No need for confirmation, submit form as normal
-                            $('input[name="isPaid"]').val('0');
-                            $('form').unbind('submit').submit();
-                        }
-                    }
-                });
-            });
-        });
-    </script>
 
-
-
-<style>
-		
-		/*Overrides for Tailwind CSS */
-		
-		.modal {
-            width: 100% !important;
-margin: auto;        }
-  .confirmation-message {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #fff;
-            padding: 20px;
-            border: 1px solid #000;
-            border-radius: 10px;
-            box-shadow: 0 0 10px #000;
-        }
-        .confirmation-message h2 {
-            margin-top: 0;
-        }
-        .confirmation-message button {
-            margin-top: 20px;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            background-color: #4CAF50;
-            color: #fff;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .confirmation-message button:hover {
-            background-color: #3e8e41;
-        }
-
-</style>
 
 </head>
 
@@ -252,9 +193,11 @@ margin: auto;        }
     <div class="container" dir="rtl"> 
 
     <h3 class="mt-4 text-center">  التقدم بطلب للحصول على اجازة  </h3>
+
     <hr>
 
     <p class="text-muted font-14 mb-4">يرجى ملئ النموذج للحصول على اجازة جديدة</p>
+   
  <?php if(@$error){?><div class="alert alert-danger "><strong>رسالة: </strong><?php echo $error; ?>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 
@@ -270,9 +213,9 @@ margin: auto;        }
         <div class="col-md-2"></div>
 
         <div class="col-md" style="margin:auto;">
-            <form action=""  method="POST">
+            <form id="leave-form" action=""  method="POST">
             <div class="form-group row pt-5">
-                    <label for="expensedate" class="col-sm-4 col-form-label "><b>  تاريخ بداء الاجازة</b></label>
+                    <label for="expensedate" class="col-sm-4 col-form-label "><b>  تاريخ بدء الاجازة</b></label>
                     <div class="col-md-6 " >
                         <input type="date" class="form-control col-sm-12 " value="<?php echo $expensedate; ?>" name="fod" id="expensedate" required>
                     </div>
@@ -321,7 +264,7 @@ margin: auto;        }
 
                                          <input type="hidden" name="isPaid" value="">
                          
-                                        <button type="submit" name="submit" class="btn btn-primary mb-5" onclick="return valid();"> ارسال   </button>
+                                       <button type="submit" name="submit" class="btn btn-primary mb-5" onclick="return valid();"> ارسال   </button>
                                 </div>
                             </div>
                     </form>
