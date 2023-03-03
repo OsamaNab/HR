@@ -75,7 +75,8 @@ else
  // Employee has enough leave days, insert data into database
         $isPaid = 0;
     } else {
-        // Employee does not have enough leave days, ask for confirmation to proceed with paid leave request
+
+      echo '<script>  // Employee does not have enough leave days, ask for confirmation to proceed with paid leave request
         $confirmed =   confirm("You do not have enough leave days to cover this request. Do you still want to submit this as a paid leave request?");
         if($confirmed) {
             // User confirmed paid leave request, insert data into database with isPaid = 1
@@ -85,7 +86,7 @@ else
             exit();
         }
 
-
+</script>';
 
                 
             }
