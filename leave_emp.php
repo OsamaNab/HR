@@ -75,9 +75,9 @@ else
  // Employee has enough leave days, insert data into database
         $isPaid = 0;
     } else {
-
+    $deduction = $Newhours - $leave   ; 
       echo '<script>  // Employee does not have enough leave days, ask for confirmation to proceed with paid leave request
-        var confirmed = confirm("لا يوجد لديك رصيد اجازات كاف, سيتم خصم من راتبك, هل تريد المتابعة ?");
+        var confirmed = confirm("لا يوجد لديك رصيد اجازات كاف, سيتم خصم'.floor($deduction/$days).'يوم من راتبك, هل تريد المتابعة ?");
         if(confirmed) {
             // User confirmed paid leave request, insert data into database with isPaid = 1
             $isPaid = 1;
@@ -321,7 +321,7 @@ margin: auto;        }
 
                                          <input type="hidden" name="isPaid" value="">
                          
-                                        <button type="submit" name="submit" class="btn btn-primary mb-5"> ارسال   </button>
+                                        <button type="submit" name="submit" class="btn btn-primary mb-5" onclick="return valid();"> ارسال   </button>
                                 </div>
                             </div>
                     </form>
