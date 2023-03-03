@@ -18,7 +18,7 @@ else
    
     $expensedate = date("Y-m-d");
   
-    if (isset($_POST['add_le'])) 
+    if (isset($_POST['submit'])) 
     {
         $empid = $_SESSION['eid'];
         $LeaveTypee = $_POST['let'];
@@ -77,22 +77,23 @@ else
     } else {
 
       echo '<script>  // Employee does not have enough leave days, ask for confirmation to proceed with paid leave request
-        $confirmed =   confirm("You do not have enough leave days to cover this request. Do you still want to submit this as a paid leave request?");
-        if($confirmed) {
+        var confirmed = confirm("لا يوجد لديك رصيد اجازات كاف, سيتم خصم من راتبك, هل تريد المتابعة ?");
+        if(confirmed) {
             // User confirmed paid leave request, insert data into database with isPaid = 1
             $isPaid = 1;
         } else {
             // User did not confirm paid leave request, exit script
-            exit();
+          exit(); 
         }
 
 </script>';
 
                 
             }
+            
                 // Insert leave request into tbleavemp table directly since leave hours are available
-                $query = "INSERT INTO tbleavemp(LeaveType, FromDate, ToDate, Descr, Status, IsRead, empid) 
-                VALUES ('$LeaveTypee','$fromdate','$todate','$Description','$status','$isread','$empid')";
+                $query = "INSERT INTO tbleavemp(LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid ,empid) 
+                VALUES ('$LeaveTypee','$fromdate','$todate','$Description','$status','$isread','$isPaid' , '$empid')";
                 
                 if ($conn->query($query) === TRUE) { 
                     $msg = "تم ارسال طلب الاجازة الخاص بك الى المسؤول سوف يتم الاجابة عليك باسرع وقت :شكرا لك";
@@ -107,7 +108,7 @@ else
 }
 
 
-   
+  
 
  $empslect = $_SESSION['eid'] ;
                 $select_name =mysqli_query($conn,"SELECT * from tbemployees where ID_emp=$empslect ");
@@ -158,9 +159,7 @@ else
 
 <link href="../admin/css/style.css" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-      
-    </style>
+    
     <script>
         $(document).ready(function() {
             // Submit form using AJAX
@@ -168,7 +167,7 @@ else
                 event.preventDefault();
                 var form_data = $(this).serialize();
                 $.ajax({
-                    url: 'check_leave_days.php',
+                    url: 'leave_emp.php',
                     method: 'POST',
                     data: form_data,
                     success: function(response) {
@@ -271,7 +270,7 @@ margin: auto;        }
         <div class="col-md-2"></div>
 
         <div class="col-md" style="margin:auto;">
-            <form action="" name="addemp" method="POST">
+            <form action=""  method="POST">
             <div class="form-group row pt-5">
                     <label for="expensedate" class="col-sm-4 col-form-label "><b>  تاريخ بداء الاجازة</b></label>
                     <div class="col-md-6 " >
@@ -322,7 +321,7 @@ margin: auto;        }
 
                                          <input type="hidden" name="isPaid" value="">
                          
-                                        <button type="submit" name="add_le" class="btn btn-primary mb-5"onclick="return valid();" > ارسال   </button>
+                                        <button type="submit" name="submit" class="btn btn-primary mb-5"> ارسال   </button>
                                 </div>
                             </div>
                     </form>
