@@ -27,7 +27,7 @@ else
         $Description = $_POST['des'];
         $status = 0;
         $isread = 0;
-        $isPaid = 1 ; 
+        
        if ($fromdate > $todate) 
        {
             $error = "الرجاء اكتب بيانات صحيحة : يجب ان يكون تاريخ بداء الاجازة قبل تاريخ نهاية الاجازة ";
@@ -83,14 +83,16 @@ else
          } else {  
              $error = "اسف لايمكن ارسال الطلب بسبب هناك اخطاء يرجى المحاولة لاحقاً";
          }
-         
+  
+
     } else {
     $deduction = $Newhours - $leave   ; 
     echo '<script>';
     echo 'var confirmed = confirm("لا يوجد لديك رصيد اجازات كاف, سيتم خصم'.floor($deduction/$daily).'يوم من راتبك, هل تريد المتابعة ?");';
     echo 'if (confirmed) {';
-    echo '$isPaid = 1;';   // Insert leave request into tbleavemp table directly since leave hours are available
-    $query = "INSERT INTO tbleavemp(LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid ,empid) 
+    $isPaid = 1;  
+     
+   $query = "INSERT INTO tbleavemp(LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid ,empid) 
     VALUES ('$LeaveTypee','$fromdate','$todate','$Description','$status','$isread','$isPaid' , '$empid')";
     
     if ($conn->query($query) === TRUE) { 
@@ -98,12 +100,16 @@ else
     } else {  
         $error = "اسف لايمكن ارسال الطلب بسبب هناك اخطاء يرجى المحاولة لاحقاً";
     }
-    echo '} else {
-        exit();
-    } ';
-      
-    echo '</script>';
 
+   echo '} else{ ';
+    
+  $error = "اسف لايمكن ارسال الطلب بسبب هناك اخطاء يرجى المحاولة لاحقاً";
+   
+   echo   '} ';
+      
+   
+   
+echo '</script>';
         }
 
 
