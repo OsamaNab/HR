@@ -101,12 +101,11 @@ else
         $error = "اسف لايمكن ارسال الطلب بسبب هناك اخطاء يرجى المحاولة لاحقاً";
     }
 
-   echo '} else{ ';
-    
-  $error = "اسف لايمكن ارسال الطلب بسبب هناك اخطاء يرجى المحاولة لاحقاً";
-   
-   echo   '} ';
-      
+    echo '} else{ ';
+    echo 'alert(" تم إلغاء الطلب ");';
+    echo   'return false;';
+    echo '}';
+          
    
    
 echo '</script>';
@@ -210,7 +209,7 @@ echo '</script>';
         <div class="col-md-2"></div>
 
         <div class="col-md" style="margin:auto;">
-            <form id="leave-form" action=""  method="POST">
+            <form id="leave-form" action=""  method="POST" >
             <div class="form-group row pt-5">
                     <label for="expensedate" class="col-sm-4 col-form-label "><b>  تاريخ بدء الاجازة</b></label>
                     <div class="col-md-6 " >
