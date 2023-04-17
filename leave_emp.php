@@ -64,35 +64,26 @@ else
             $leave= $row1['leaveDays']; //80 
             
             $Newhours = $daily * $days ; //8 * 5 = 40 
-        
-
-
-
-
-
-            if($leave > $Newhours )
+        if($leave > $Newhours )
             {
- // Employee has enough leave days, insert data into database
-        $isPaid = 0;
-         // Insert leave request into tbleavemp table directly since leave hours are available
-         $query = "INSERT INTO tbleavemp(LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid ,empid) 
-         VALUES ('$LeaveTypee','$fromdate','$todate','$Description','$status','$isread','$isPaid' , '$empid')";
+              $isPaid = 0;
+              $query = "INSERT INTO tbleavemp(LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid ,empid) 
+   VALUES ('$LeaveTypee','$fromdate','$todate','$Description','$status','$isread','$isPaid' , '$empid')";
+   
+   if ($conn->query($query) === TRUE) { 
+       $msg = "تم ارسال طلب الاجازة الخاص بك الى المسؤول سوف يتم الاجابة عليك باسرع وقت :شكرا لك";
+   } else {  
+       $error = "اسف لايمكن ارسال الطلب بسبب هناك اخطاء يرجى المحاولة لاحقاً";
+   }
+        
          
-         if ($conn->query($query) === TRUE) { 
-             $msg = "تم ارسال طلب الاجازة الخاص بك الى المسؤول سوف يتم الاجابة عليك باسرع وقت :شكرا لك";
-         } else {  
-             $error = "اسف لايمكن ارسال الطلب بسبب هناك اخطاء يرجى المحاولة لاحقاً";
-         }
-  
-
+        
     } else {
     $deduction = $Newhours - $leave   ; 
     echo '<script>';
-    echo 'var confirmed = confirm("لا يوجد لديك رصيد اجازات كاف, سيتم خصم'.floor($deduction/$daily).'يوم من راتبك, هل تريد المتابعة ?");';
-    echo 'if (confirmed) {';
-    $isPaid = 1;  
-     
-   $query = "INSERT INTO tbleavemp(LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid ,empid) 
+    echo 'if(confirm("لا يوجد لديك رصيد اجازات كاف, سيتم خصم'.floor($deduction/$daily).'يوم من راتبك, هل تريد المتابعة ?")){';
+    $isPaid = 1 ;
+    $query = "INSERT INTO tbleavemp(LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid ,empid) 
     VALUES ('$LeaveTypee','$fromdate','$todate','$Description','$status','$isread','$isPaid' , '$empid')";
     
     if ($conn->query($query) === TRUE) { 
@@ -100,25 +91,16 @@ else
     } else {  
         $error = "اسف لايمكن ارسال الطلب بسبب هناك اخطاء يرجى المحاولة لاحقاً";
     }
-
-    echo '} else{ ';
-    echo 'alert(" تم إلغاء الطلب ");';
-    echo   'return false;';
-    echo '}';
-          
    
-   
-echo '</script>';
-        }
+     
+   echo '}';  
+   echo '</script>'; 
+    
+ 
+  
 
-
-
-                
-            
-                
-         
-          
-            
+    
+}
            
         }
     }
@@ -257,8 +239,11 @@ echo '</script>';
               
                 <div class="form-group row pt-5">
                                 <div class="col-md-12 text-right">
+                                  
+ 
 
-                                         <input type="hidden" name="isPaid" value="">
+
+                                      <input type="hidden" name="isPaid" value="">
                          
                                        <button type="submit" name="submit" class="btn btn-primary mb-5" onclick="return valid();"> ارسال   </button>
                                 </div>
