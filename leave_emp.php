@@ -79,24 +79,7 @@ else
          
         
     } else {
-    $deduction = $Newhours - $leave   ; 
-    echo '<script>';
-    echo 'if(confirm("لا يوجد لديك رصيد اجازات كاف, سيتم خصم'.floor($deduction/$daily).'يوم من راتبك, هل تريد المتابعة ?")){';
-    $isPaid = 1 ;
-    $query = "INSERT INTO tbleavemp(LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid ,empid) 
-    VALUES ('$LeaveTypee','$fromdate','$todate','$Description','$status','$isread','$isPaid' , '$empid')";
-    
-    if ($conn->query($query) === TRUE) { 
-        $msg = "تم ارسال طلب الاجازة الخاص بك الى المسؤول سوف يتم الاجابة عليك باسرع وقت :شكرا لك";
-    } else {  
-        $error = "اسف لايمكن ارسال الطلب بسبب هناك اخطاء يرجى المحاولة لاحقاً";
-    }
-   
-     
-   echo '}';  
-   echo '</script>'; 
-    
- 
+   //I want a confirmation message to show up and asks if the user wants to insert if yes is clicked insert if no is clicked then abort  
   
 
     
