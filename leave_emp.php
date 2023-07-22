@@ -30,7 +30,7 @@ else
         
        if ($fromdate > $todate) 
        {
-            $error = "الرجاء اكتب بيانات صحيحة : يجب ان يكون تاريخ بداء الاجازة قبل تاريخ نهاية الاجازة ";
+            $error = "الرجاء اكتب بيانات صحيحة : يجب ان يكون تاريخ بدء الاجازة قبل تاريخ نهاية الاجازة ";
 
         } 
         else 
@@ -68,7 +68,7 @@ else
             {
               $isPaid = 0;
               $query = "INSERT INTO tbleavemp(LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid ,empid) 
-   VALUES ('$LeaveTypee','$fromdate','$todate','$Description','$status','$isread','$isPaid' , '$empid')";
+              VALUES ('$LeaveTypee','$fromdate','$todate','$Description','$status','$isread','$isPaid' , '$empid')";
    
    if ($conn->query($query) === TRUE) { 
        $msg = "تم ارسال طلب الاجازة الخاص بك الى المسؤول سوف يتم الاجابة عليك باسرع وقت :شكرا لك";
@@ -77,12 +77,36 @@ else
    }
         
          
-        
+       
     } else {
-   //I want a confirmation message to show up and asks if the user wants to insert if yes is clicked insert if no is clicked then abort  
-  
-
-    
+        $deduction = $Newhours - $leave;
+        echo '<script>';
+       echo 'if(confirm("لا يوجد لديك رصيد اجازات كاف, سيتم خصم'.floor($deduction/$daily).'يوم من راتبك, هل تريد المتابعة ?")){';
+        echo '   var proceed = true;';
+        echo '} else {';
+        echo '   var proceed = false;';
+        echo '}';
+        echo 'if (proceed) {';
+        $isPaid = 1;
+        $query = "INSERT INTO tbleavemp(LeaveType, FromDate, ToDate, Descr, Status, IsRead, IsPaid ,empid) 
+              VALUES ('$LeaveTypee','$fromdate','$todate','$Description','$status','$isread','$isPaid' , '$empid')";
+        echo '   var xhr = new XMLHttpRequest();';
+        echo '   xhr.open("POST", "insert.php", true);';
+        echo '   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");';
+        echo '   xhr.onreadystatechange = function() {';
+        echo '       if (xhr.readyState === 4 && xhr.status === 200) {';
+        echo '           var response = xhr.responseText;';
+        echo '           if (response === "success") {';
+        echo '        ';
+        echo '           } else {';
+        echo '            ';
+        echo '           }';
+        echo '       }';
+        echo '   };';
+        echo '   xhr.send("LeaveTypee=' . urlencode($LeaveTypee) . '&fromdate=' . urlencode($fromdate) . '&todate=' . urlencode($todate) . '&Description=' . urlencode($Description) . '&status=' . urlencode($status) . '&isread=' . urlencode($isread) . '&isPaid=' .  urlencode($isPaid) . '&empid=' . urlencode($empid) . '");';
+        echo '}';
+        echo '</script>';
+            
 }
            
         }
@@ -167,7 +191,18 @@ else
                                  else if(@$msg){?><div class="alert alert-success" role="alert">
                                     <strong>رسالة: </strong><?php echo $msg; ?> 
                                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    <script>
+        
+        var error = <?php echo json_encode($error); ?>;
+        var msg = <?php echo json_encode($msg); ?>;
 
+        // Use the 'error' and 'msg' variables in your JavaScript code
+        if (error) {
+            console.log("Error: " + error);
+        } else if (msg) {
+            console.log("Message: " + msg);
+        }
+    </script>
                                  </div><?php }?>
     <div class="row ">
 
@@ -225,8 +260,8 @@ else
                                   
  
 
-
-                                      <input type="hidden" name="isPaid" value="">
+                                
+                                     
                          
                                        <button type="submit" name="submit" class="btn btn-primary mb-5" onclick="return valid();"> ارسال   </button>
                                 </div>
@@ -254,24 +289,10 @@ else
                 <!-- trading history area end -->
             </div>
 
-
+            
 
 
 
     </div>
  </div>
 <?php include 'footer_emp.php';?>
-
-
-  
-  
-    </body>
-
-
-
-</html>
-
-
-
-
-
